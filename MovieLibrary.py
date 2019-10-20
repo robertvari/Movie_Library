@@ -1,6 +1,8 @@
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout, QAction
 import sys
 
+from modules import movie_browser, movie_details
+
 class MovieLibrary(QMainWindow):
     def __init__(self):
         super(MovieLibrary, self).__init__()
@@ -25,6 +27,13 @@ class MovieLibrary(QMainWindow):
         manage_folder_action = QAction("Manage Folders", settings_menu)
         manage_folder_action.triggered.connect(self.manage_folders_action)
         settings_menu.addAction(manage_folder_action)
+
+        # load modules
+        self.movie_browser = movie_browser.MovieBrowser()
+        main_layout.addWidget(self.movie_browser)
+
+        self.movie_details = movie_details.MovieDetails()
+        main_layout.addWidget(self.movie_details)
 
     def add_folder_action(self):
         print("Add folder action")
