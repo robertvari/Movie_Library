@@ -22,6 +22,14 @@ class MovieList(QListWidget):
         super(MovieList, self).__init__()
 
 
+        # todo remove this later
+        self.create_test_content()
+
+
+    def create_test_content(self):
+        for i in range(100):
+            self.addItem(f"Movie {i}")
+
 class SearchBar(QWidget):
     def __init__(self):
         super().__init__()

@@ -19,13 +19,17 @@ class MovieLibrary(QMainWindow):
         # main menu
         menu = self.menuBar()
 
-        settings_menu = menu.addMenu("&Settings")
+        settings_menu = menu.addMenu("&Content")
 
         add_folder_action = QAction("Add Folder", settings_menu)
         add_folder_action.triggered.connect(self.add_folder_action)
         settings_menu.addAction(add_folder_action)
 
-        manage_folder_action = QAction("Manage Folders", settings_menu)
+        add_folder_action = QAction("Add Movie", settings_menu)
+        add_folder_action.triggered.connect(self.add_folder_action)
+        settings_menu.addAction(add_folder_action)
+
+        manage_folder_action = QAction("Manage Movies", settings_menu)
         manage_folder_action.triggered.connect(self.manage_folders_action)
         settings_menu.addAction(manage_folder_action)
 
