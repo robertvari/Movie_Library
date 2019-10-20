@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLin
 
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 
-from PySide2.QtCore import Qt, QSize
+from PySide2.QtCore import Qt, QSize, QRect
 
 class MovieBrowser(QWidget):
     def __init__(self):
@@ -71,7 +71,8 @@ class MovieListDelegate(QItemDelegate):
         self.background_brush = QBrush(QColor("black"))
         self.selected_brush = QBrush(QColor(76, 228, 239, 80))
         self.mouse_over_brush = QBrush(QColor("yellow"))
-        self.temp_poster = QPixmap(get_static("placeholder_poster.jpg"))
+        pixmap = QPixmap(get_static("placeholder_poster.jpg"))
+        self.temp_poster = pixmap.scaled(MovieItem.poster_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
     def paint(self, painter, option, index):
         rect = option.rect
@@ -81,7 +82,9 @@ class MovieListDelegate(QItemDelegate):
         painter.drawRect(rect)
 
         # posters
-        painter.drawPixmap(rect, self.temp_poster)
+        poster_rect = QRect(rect.x(), rect.y(), self.temp_poster.width(), self.temp_poster.height())
+        poster_rect.moveCenter(rect.center())
+        painter.drawPixmap(poster_rect, self.temp_poster)
 
         if option.state & QStyle.State_Selected:
             painter.setBrush(self.selected_brush)
@@ -89,6 +92,8 @@ class MovieListDelegate(QItemDelegate):
 
 
 class MovieItem(QListWidgetItem):
+    poster_size = QSize(200, 300)
+
     def __init__(self, parentWidget):
         super(MovieItem, self).__init__(parentWidget)
-        self.setSizeHint(QSize(200,300))
+        self.setSizeHint(self.poster_size)
