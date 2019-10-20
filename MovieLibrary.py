@@ -14,6 +14,7 @@ class MovieLibrary(QMainWindow):
         self.setCentralWidget(central_Widget)
 
         main_layout = QVBoxLayout(central_Widget)
+        main_layout.setContentsMargins(0,0,0,0)
 
         # main menu
         menu = self.menuBar()
