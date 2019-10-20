@@ -1,9 +1,10 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
     QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle
-
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
-
 from PySide2.QtCore import Qt, QSize, QRect
+
+from utilities.static_utils import get_static
+from utilities.file_utils import get_files
 
 class MovieBrowser(QWidget):
     def __init__(self):
@@ -18,7 +19,6 @@ class MovieBrowser(QWidget):
 
         self.movie_list = MovieList()
         main_layout.addWidget(self.movie_list)
-
 
 class SearchBar(QWidget):
     def __init__(self):
@@ -58,10 +58,8 @@ class MovieList(QListWidget):
 
 
     def create_test_content(self):
-        for i in range(10):
-            MovieItem(self)
-
-from utilities.static_utils import get_static
+        for movie_file in get_files():
+            MovieItem(self, movie_file)
 
 class MovieListDelegate(QItemDelegate):
     def __init__(self):
@@ -71,29 +69,34 @@ class MovieListDelegate(QItemDelegate):
         self.background_brush = QBrush(QColor("black"))
         self.selected_brush = QBrush(QColor(76, 228, 239, 80))
         self.mouse_over_brush = QBrush(QColor("yellow"))
-        pixmap = QPixmap(get_static("placeholder_poster.jpg"))
-        self.temp_poster = pixmap.scaled(MovieItem.poster_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.poster_pixmap = QPixmap()
+        # self.temp_poster = pixmap.scaled(MovieItem.poster_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
     def paint(self, painter, option, index):
         rect = option.rect
+
+        poster_file = index.data(Qt.UserRole)
+        self.poster_pixmap.load(poster_file)
+        poster_file_rescaled = self.poster_pixmap.scaled(MovieItem.poster_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         painter.setPen(self.outline_pen)
         painter.setBrush(self.background_brush)
         painter.drawRect(rect)
 
         # posters
-        poster_rect = QRect(rect.x(), rect.y(), self.temp_poster.width(), self.temp_poster.height())
+        poster_rect = QRect(rect.x(), rect.y(), poster_file_rescaled.width(), poster_file_rescaled.height())
         poster_rect.moveCenter(rect.center())
-        painter.drawPixmap(poster_rect, self.temp_poster)
+        painter.drawPixmap(poster_rect, poster_file_rescaled)
 
         if option.state & QStyle.State_Selected:
             painter.setBrush(self.selected_brush)
             painter.drawRect(rect)
 
-
 class MovieItem(QListWidgetItem):
     poster_size = QSize(200, 300)
 
-    def __init__(self, parentWidget):
+    def __init__(self, parentWidget, movie_file):
         super(MovieItem, self).__init__(parentWidget)
         self.setSizeHint(self.poster_size)
+
+        self.setData(Qt.UserRole, movie_file)
