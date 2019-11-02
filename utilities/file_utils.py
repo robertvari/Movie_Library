@@ -9,6 +9,9 @@ def download_image(url, destination):
         with open(destination, 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
+        return destination
+
+    return False
 
 if __name__ == '__main__':
     download_image(

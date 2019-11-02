@@ -1,6 +1,8 @@
 import os, json
 from utilities.movieDB import get_movie_data
 
+from utilities.file_utils import download_image
+
 class Movie:
     database_folder = r"E:\_PythonSuli\Desktop_App_1019\Movie_Library\database"
     home_folder = os.path.join(os.path.expanduser("~"), "Movie_Library")
@@ -41,21 +43,16 @@ class Movie:
             self.save()
 
     def download_poster(self, movie_data):
-        posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
-        backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
-
-        poster_url = posterPathString
-        backdrop_url = backdropPathString
-
-        print(poster_url)
-
         if not os.path.exists(self.home_folder):
             os.makedirs(self.home_folder)
 
-        self.poster = os.path.join(self.home_folder, self.title + ".jpg")
-        self.backdrop = os.path.join(self.home_folder, self.title + "_backdrop.jpg")
+        posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
+        backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
+        poster_url = posterPathString
+        backdrop_url = backdropPathString
 
-
+        self.poster = download_image(poster_url, os.path.join(self.home_folder, self.title + ".jpg"))
+        self.backdrop = download_image(backdrop_url, os.path.join(self.home_folder, self.title + "_backdrop.jpg"))
 
     def save(self):
         data_file = os.path.join(self.database_folder, self.title + ".json")
@@ -70,3 +67,5 @@ class Movie:
 
 if __name__ == '__main__':
     movie = Movie("The Matrix")
+    movie = Movie("Star Wars")
+    movie = Movie("Aliens")
