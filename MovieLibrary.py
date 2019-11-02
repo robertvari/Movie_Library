@@ -43,9 +43,12 @@ class MovieLibrary(QMainWindow):
         self.movie_browser.movie_list.show_detail.connect(self.show_details)
         self.movie_details.close_details.connect(self.hide_details)
 
-    def show_details(self, value):
+    def show_details(self, movie):
         self.movie_browser.setVisible(False)
+
+
         self.movie_details.setVisible(True)
+        self.movie_details.set_movie(movie)
 
     def hide_details(self):
         self.movie_browser.setVisible(True)

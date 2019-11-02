@@ -3,6 +3,8 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLin
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 from PySide2.QtCore import Qt, QSize, QRect, Signal
 
+from objects.movie import Movie
+
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
 
@@ -41,7 +43,7 @@ class SearchBar(QWidget):
 # The movie list
 
 class MovieList(QListWidget):
-    show_detail = Signal(bool)
+    show_detail = Signal(object)
 
     def __init__(self):
         super(MovieList, self).__init__()
@@ -53,19 +55,22 @@ class MovieList(QListWidget):
         self.setSelectionMode(QListWidget.ExtendedSelection)
         self.setMovement(QListWidget.Static)
 
-        # todo remove this later
-        self.create_test_content()
+        self.refresh()
 
         self.setStyleSheet("background-color:#222")
 
         self.itemDoubleClicked.connect(self.show_details_action)
 
     def show_details_action(self, item):
-        self.show_detail.emit(True)
+        self.show_detail.emit(item.movie)
 
-    def create_test_content(self):
+    def refresh(self):
+        self.clear()
+
+        # todo replace this with database query
         for movie_file in get_files():
-            MovieItem(self, movie_file)
+            MovieItem(self, Movie(movie_file))
+
 
 class MovieListDelegate(QItemDelegate):
     def __init__(self):
@@ -101,8 +106,9 @@ class MovieListDelegate(QItemDelegate):
 class MovieItem(QListWidgetItem):
     poster_size = QSize(200, 300)
 
-    def __init__(self, parentWidget, movie_file):
+    def __init__(self, parentWidget, movie_object):
         super(MovieItem, self).__init__(parentWidget)
         self.setSizeHint(self.poster_size)
+        self.movie = movie_object
 
-        self.setData(Qt.UserRole, movie_file)
+        self.setData(Qt.UserRole, movie_object.poster)
