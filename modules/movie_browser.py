@@ -99,6 +99,9 @@ class MovieList(QListWidget):
     def create_movies(self, files):
         for item in files:
             movie_object = Movie(item)
+            print(movie_object.release_date)
+            print(movie_object.title)
+            print(movie_object.description)
 
     def show_details_action(self, item):
         self.show_detail.emit(item.movie)
