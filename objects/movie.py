@@ -1,8 +1,10 @@
-import os
+import os, json
 
 from utilities.movieDB import get_movie_data
 
 class Movie:
+    database_folder = r"E:\_PythonSuli\Desktop_App_1019\Movie_Library\database"
+
     def __init__(self, movie_path):
         self.path = movie_path
 
@@ -34,6 +36,13 @@ class Movie:
             self.original_language = movie_data["original_language"]
             self.rating = movie_data["vote_average"]
 
+            self.save()
+
+    def save(self):
+        data_file = os.path.join(self.database_folder, self.title + ".json")
+        with open(data_file, "w") as f:
+            json.dump(self.__dict__, f)
+
     def __str__(self):
         return self.title
 
@@ -43,8 +52,5 @@ class Movie:
 
 if __name__ == '__main__':
     movie = Movie("The Matrix")
-    print(movie.title)
-    print(movie.release_date)
-    print(movie.original_language)
-    print(movie.rating)
-    print(movie.description)
+    movie = Movie("Star Wars")
+    movie = Movie("Aliens")
