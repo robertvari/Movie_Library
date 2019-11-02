@@ -36,7 +36,20 @@ class Movie:
             self.original_language = movie_data["original_language"]
             self.rating = movie_data["vote_average"]
 
+            self.download_poster(movie_data)
+
             self.save()
+
+    def download_poster(self, movie_data):
+        posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
+        backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
+
+
+        poster_url = posterPathString
+        backdrop_url = backdropPathString
+
+        print(poster_url)
+        print(backdrop_url)
 
     def save(self):
         data_file = os.path.join(self.database_folder, self.title + ".json")
@@ -49,8 +62,5 @@ class Movie:
     def __repr__(self):
         return self.title
 
-
 if __name__ == '__main__':
     movie = Movie("The Matrix")
-    movie = Movie("Star Wars")
-    movie = Movie("Aliens")
