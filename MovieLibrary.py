@@ -40,6 +40,17 @@ class MovieLibrary(QMainWindow):
         self.movie_details = movie_details.MovieDetails()
         main_layout.addWidget(self.movie_details)
 
+        self.movie_browser.movie_list.show_detail.connect(self.show_details)
+        self.movie_details.close_details.connect(self.hide_details)
+
+    def show_details(self, value):
+        self.movie_browser.setVisible(False)
+        self.movie_details.setVisible(True)
+
+    def hide_details(self):
+        self.movie_browser.setVisible(True)
+        self.movie_details.setVisible(False)
+
     def add_folder_action(self):
         print("Add folder action")
 

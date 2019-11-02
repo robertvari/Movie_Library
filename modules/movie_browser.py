@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
     QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
-from PySide2.QtCore import Qt, QSize, QRect
+from PySide2.QtCore import Qt, QSize, QRect, Signal
 
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
@@ -41,6 +41,8 @@ class SearchBar(QWidget):
 # The movie list
 
 class MovieList(QListWidget):
+    show_detail = Signal(bool)
+
     def __init__(self):
         super(MovieList, self).__init__()
         self.setItemDelegate(MovieListDelegate())
@@ -56,6 +58,10 @@ class MovieList(QListWidget):
 
         self.setStyleSheet("background-color:#222")
 
+        self.itemDoubleClicked.connect(self.show_details_action)
+
+    def show_details_action(self, item):
+        self.show_detail.emit(True)
 
     def create_test_content(self):
         for movie_file in get_files():
