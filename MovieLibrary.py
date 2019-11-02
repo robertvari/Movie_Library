@@ -62,17 +62,13 @@ class MovieLibrary(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select folder:", "c:")
 
         if folder:
-            self.create_movies( get_files(folder) )
+            self.movie_browser.movie_list.create_movies( get_files(folder) )
 
     def add_movie_acion(self):
         files = QFileDialog.getOpenFileNames(self, "Select movie files:", "c:", "Movie File (*.mkv)")
 
         if files[0]:
-            self.create_movies(files[0])
-
-    def create_movies(self, files):
-        for item in files:
-            movie_object = Movie(item)
+            self.movie_browser.movie_list.create_movies(files[0])
 
     def manage_movies_action(self):
         print("manage movies")

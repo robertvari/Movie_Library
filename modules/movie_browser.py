@@ -47,19 +47,42 @@ class MovieList(QListWidget):
 
     def __init__(self):
         super(MovieList, self).__init__()
+        # self.setAcceptDrops(True)
+
         self.setItemDelegate(MovieListDelegate())
         self.setSpacing(5)
 
         self.setViewMode(QListWidget.IconMode)
         self.setResizeMode(QListWidget.Adjust)
         self.setSelectionMode(QListWidget.ExtendedSelection)
-        self.setMovement(QListWidget.Static)
+        # self.setMovement(QListWidget.Static)
 
         self.refresh()
 
         self.setStyleSheet("background-color:#222")
 
         self.itemDoubleClicked.connect(self.show_details_action)
+
+    def dragEnterEvent(self, event):
+        print("Drag Enter Event")
+
+        # check drag data
+        if True:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        print("Drag move event")
+        event.accept()
+
+    def dropEvent(self, event):
+        print("Drop event")
+        event.accept()
+
+    def create_movies(self, files):
+        for item in files:
+            movie_object = Movie(item)
 
     def show_details_action(self, item):
         self.show_detail.emit(item.movie)
