@@ -4,6 +4,7 @@ from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 from PySide2.QtCore import Qt, QSize, QRect, Signal
 
 from objects.movie import Movie
+import os
 
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
@@ -47,7 +48,6 @@ class MovieList(QListWidget):
 
     def __init__(self):
         super(MovieList, self).__init__()
-        # self.setAcceptDrops(True)
 
         self.setItemDelegate(MovieListDelegate())
         self.setSpacing(5)
@@ -55,7 +55,6 @@ class MovieList(QListWidget):
         self.setViewMode(QListWidget.IconMode)
         self.setResizeMode(QListWidget.Adjust)
         self.setSelectionMode(QListWidget.ExtendedSelection)
-        # self.setMovement(QListWidget.Static)
 
         self.refresh()
 
@@ -63,21 +62,38 @@ class MovieList(QListWidget):
 
         self.itemDoubleClicked.connect(self.show_details_action)
 
-    def dragEnterEvent(self, event):
-        print("Drag Enter Event")
+    def check_drop_data(self, urls):
 
+        self.mkv_files = []
+        for item in urls:
+            file_path = item.toLocalFile()
+
+            if os.path.isfile(file_path):
+                if file_path.endswith(".mkv"):
+                    self.mkv_files.append(file_path)
+            else:
+                self.mkv_files += get_files(file_path)
+
+        if self.mkv_files:
+            return True
+
+        return False
+
+    def dragEnterEvent(self, event):
         # check drag data
-        if True:
-            event.accept()
+        if event.mimeData().hasUrls():
+            if self.check_drop_data(event.mimeData().urls()):
+                event.accept()
+            else:
+                event.ignore()
         else:
             event.ignore()
 
     def dragMoveEvent(self, event):
-        print("Drag move event")
         event.accept()
 
     def dropEvent(self, event):
-        print("Drop event")
+        self.create_movies(self.mkv_files)
         event.accept()
 
     def create_movies(self, files):
