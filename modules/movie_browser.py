@@ -68,8 +68,8 @@ class MovieList(QListWidget):
         self.clear()
 
         # todo replace this with database query
-        for movie_file in get_files():
-            MovieItem(self, Movie(movie_file))
+        # for movie_file in get_files():
+        #     MovieItem(self, Movie(movie_file))
 
 
 class MovieListDelegate(QItemDelegate):

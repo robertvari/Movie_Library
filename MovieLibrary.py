@@ -1,7 +1,11 @@
-from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout, QAction
+from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout, \
+    QAction, QFileDialog
 import sys
 
 from modules import movie_browser, movie_details
+from utilities.file_utils import get_files
+from objects.movie import Movie
+
 
 class MovieLibrary(QMainWindow):
     def __init__(self):
@@ -25,12 +29,12 @@ class MovieLibrary(QMainWindow):
         add_folder_action.triggered.connect(self.add_folder_action)
         settings_menu.addAction(add_folder_action)
 
-        add_folder_action = QAction("Add Movie", settings_menu)
-        add_folder_action.triggered.connect(self.add_folder_action)
-        settings_menu.addAction(add_folder_action)
+        add_movie_action = QAction("Add Movie", settings_menu)
+        add_movie_action.triggered.connect(self.add_movie_acion)
+        settings_menu.addAction(add_movie_action)
 
         manage_folder_action = QAction("Manage Movies", settings_menu)
-        manage_folder_action.triggered.connect(self.manage_folders_action)
+        manage_folder_action.triggered.connect(self.manage_movies_action)
         settings_menu.addAction(manage_folder_action)
 
         # load modules
@@ -55,10 +59,23 @@ class MovieLibrary(QMainWindow):
         self.movie_details.setVisible(False)
 
     def add_folder_action(self):
-        print("Add folder action")
+        folder = QFileDialog.getExistingDirectory(self, "Select folder:", "c:")
 
-    def manage_folders_action(self):
-        print("manage folder")
+        if folder:
+            self.create_movies( get_files(folder) )
+
+    def add_movie_acion(self):
+        files = QFileDialog.getOpenFileNames(self, "Select movie files:", "c:", "Movie File (*.mkv)")
+
+        if files[0]:
+            self.create_movies(files[0])
+
+    def create_movies(self, files):
+        for item in files:
+            movie_object = Movie(item)
+
+    def manage_movies_action(self):
+        print("manage movies")
 
 
 if __name__ == '__main__':
