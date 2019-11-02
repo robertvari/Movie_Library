@@ -1,9 +1,9 @@
 import os, json
-
 from utilities.movieDB import get_movie_data
 
 class Movie:
     database_folder = r"E:\_PythonSuli\Desktop_App_1019\Movie_Library\database"
+    home_folder = os.path.join(os.path.expanduser("~"), "Movie_Library")
 
     def __init__(self, movie_path):
         self.path = movie_path
@@ -44,12 +44,18 @@ class Movie:
         posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
         backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
 
-
         poster_url = posterPathString
         backdrop_url = backdropPathString
 
         print(poster_url)
-        print(backdrop_url)
+
+        if not os.path.exists(self.home_folder):
+            os.makedirs(self.home_folder)
+
+        self.poster = os.path.join(self.home_folder, self.title + ".jpg")
+        self.backdrop = os.path.join(self.home_folder, self.title + "_backdrop.jpg")
+
+
 
     def save(self):
         data_file = os.path.join(self.database_folder, self.title + ".json")
