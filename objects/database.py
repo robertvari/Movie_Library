@@ -24,6 +24,9 @@ class Client():
     def find_by_id(self, _id):
         return self.collection.find_one({"_id": _id})
 
+    def find_by_path(self, path):
+        return self.collection.find_one({"path": path})
+
     def delete(self, _id):
         self.collection.delete_one({"_id":_id})
 
