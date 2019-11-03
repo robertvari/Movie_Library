@@ -20,6 +20,7 @@ class Movie:
         self.favorite = False
         self.watched = False
         self.original_language = None
+        self.database_file = None
 
         self.refresh_movie_data()
 
@@ -55,9 +56,23 @@ class Movie:
         self.backdrop = download_image(backdrop_url, os.path.join(self.home_folder, self.title + "_backdrop.jpg"))
 
     def save(self):
-        data_file = os.path.join(self.database_folder, self.title + ".json")
-        with open(data_file, "w") as f:
+        self.database_file = os.path.join(self.database_folder, self.title + ".json")
+
+        with open(self.database_file, "w") as f:
             json.dump(self.__dict__, f)
+
+    def delete(self):
+        # remove posters
+        if self.poster:
+            os.remove(self.poster)
+
+        if self.backdrop:
+            os.remove(self.backdrop)
+
+        # delete database files
+        if self.database_file:
+            os.remove(self.database_file)
+
 
     def __str__(self):
         return self.title
@@ -67,5 +82,4 @@ class Movie:
 
 if __name__ == '__main__':
     movie = Movie("The Matrix")
-    movie = Movie("Star Wars")
-    movie = Movie("Aliens")
+    movie.delete()

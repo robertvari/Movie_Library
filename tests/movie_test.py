@@ -3,30 +3,21 @@ import os
 
 from objects.movie import Movie
 
-
 class TestMovie(TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.title = "The Matrix"
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        Remove database files
-        """
-        print("Clean up database...")
-        database_files = [os.path.join(Movie.database_folder, i) for i in os.listdir(Movie.database_folder)]
-        for file_item in database_files:
-            os.remove(file_item)
+    def tearDown(self) -> None:
+        if hasattr(self, "movies"):
+            print(f"Cleaning up after {self.movies}")
+            [i.delete() for i in self.movies]
+        else:
+            print(f'Cleaning up: {self.movie}')
+            self.movie.delete()
 
     def test_create_movie(self):
-        movie = Movie(self.title)
+        self.movie = Movie("Star Wars")
 
-        self.assertIsNotNone(movie.title)
-
-        database_file = os.path.join(Movie.database_folder, movie.title + ".json")
-        self.assertTrue(os.path.exists(database_file))
+        self.assertIsNotNone(self.movie.title)
+        self.assertTrue(os.path.exists(self.movie.database_file))
 
     def test_movie_list(self):
         movie_list = [
@@ -36,8 +27,10 @@ class TestMovie(TestCase):
              "Jaws"
         ]
 
+        self.movies = []
         for i in movie_list:
             movie_object = Movie(i)
+            self.movies.append(movie_object)
             self.assertIsNotNone(movie_object.release_date)
 
 
