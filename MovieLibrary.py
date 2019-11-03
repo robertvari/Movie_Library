@@ -50,7 +50,6 @@ class MovieLibrary(QMainWindow):
     def show_details(self, movie):
         self.movie_browser.setVisible(False)
 
-
         self.movie_details.setVisible(True)
         self.movie_details.set_movie(movie)
 

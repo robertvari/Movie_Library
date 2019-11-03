@@ -8,6 +8,8 @@ import os
 
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
+from objects.database import Client
+
 
 class MovieBrowser(QWidget):
     def __init__(self):
@@ -45,6 +47,7 @@ class SearchBar(QWidget):
 
 class MovieList(QListWidget):
     show_detail = Signal(object)
+    client = Client()
 
     def __init__(self):
         super(MovieList, self).__init__()
@@ -56,11 +59,12 @@ class MovieList(QListWidget):
         self.setResizeMode(QListWidget.Adjust)
         self.setSelectionMode(QListWidget.ExtendedSelection)
 
-        self.refresh()
-
         self.setStyleSheet("background-color:#222")
 
         self.itemDoubleClicked.connect(self.show_details_action)
+
+        self.movie_db_list = Movie.get_all_movies_from_db()
+        self.refresh()
 
     def check_drop_data(self, urls):
 
@@ -96,12 +100,23 @@ class MovieList(QListWidget):
         self.create_movies(self.mkv_files)
         event.accept()
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete:
+            current_selection = self.selectedItems()
+            if current_selection:
+                for item in current_selection:
+                    movie_object = item.movie
+                    movie_object.delete()
+                    self.movie_db_list.remove(movie_object)
+
+                self.refresh()
+
     def create_movies(self, files):
+        self.movie_db_list = []
         for item in files:
-            movie_object = Movie(item)
-            print(movie_object.release_date)
-            print(movie_object.title)
-            print(movie_object.description)
+            self.movie_db_list.append(Movie(movie_path=item, client=self.client))
+
+        self.refresh()
 
     def show_details_action(self, item):
         self.show_detail.emit(item.movie)
@@ -109,9 +124,8 @@ class MovieList(QListWidget):
     def refresh(self):
         self.clear()
 
-        # todo replace this with database query
-        # for movie_file in get_files():
-        #     MovieItem(self, Movie(movie_file))
+        for movie_object in self.movie_db_list:
+            MovieItem(self, movie_object)
 
 
 class MovieListDelegate(QItemDelegate):

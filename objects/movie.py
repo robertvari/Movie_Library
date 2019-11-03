@@ -9,7 +9,7 @@ home_folder = os.path.join(os.path.expanduser("~"), "Movie_Library")
 class Movie:
     client = None
 
-    def __init__(self, movie_path, client=None):
+    def __init__(self, movie_path=None, movie_data=None, client=None):
         self.path = movie_path
         Movie.client = client
 
@@ -24,7 +24,18 @@ class Movie:
         self.watched = False
         self.original_language = None
 
-        self.refresh_movie_data()
+        if not movie_data:
+            self.refresh_movie_data()
+        else:
+            self.load(movie_data)
+
+    @staticmethod
+    def get_all_movies_from_db():
+        client = Client()
+        movie_db_list = client.find_all_movies()
+        if movie_db_list:
+            return [Movie(movie_data=movie_data, client=client) for movie_data in movie_db_list]
+        return []
 
     def refresh_movie_data(self):
 
@@ -81,6 +92,10 @@ class Movie:
             with open(database_file, "w") as f:
                 json.dump(self.__dict__, f)
 
+    def load(self, movie_data):
+        for k,v in movie_data.items():
+            setattr(self, k,v)
+
     def delete(self):
         # remove posters
         if self.poster:
@@ -100,6 +115,4 @@ class Movie:
         return self.title
 
 if __name__ == '__main__':
-    client = Client("MovieLibrary")
-    movie = Movie(r"E:\_PythonSuli\Desktop_App_1019\movies\Terminator.mkv", client)
-    movie.delete()
+    print( Movie.get_all_movies_from_db() )
