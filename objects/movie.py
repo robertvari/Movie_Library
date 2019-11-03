@@ -4,8 +4,9 @@ from utilities.movieDB import get_movie_data
 from utilities.file_utils import download_image
 from objects.database import Client
 
+home_folder = os.path.join(os.path.expanduser("~"), "Movie_Library")
+
 class Movie:
-    home_folder = os.path.join(os.path.expanduser("~"), "Movie_Library")
     client = None
 
     def __init__(self, movie_path, client=None):
@@ -22,7 +23,6 @@ class Movie:
         self.favorite = False
         self.watched = False
         self.original_language = None
-        self.database_file = None
 
         self.refresh_movie_data()
 
@@ -53,8 +53,8 @@ class Movie:
                 setattr(self, k,v)
 
     def download_poster(self, movie_data):
-        if not os.path.exists(self.home_folder):
-            os.makedirs(self.home_folder)
+        if not os.path.exists(home_folder):
+            os.makedirs(home_folder)
 
         posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
         backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
@@ -62,8 +62,8 @@ class Movie:
         backdrop_url = backdropPathString
 
         timestamp = int(time.time())
-        poster_path = os.path.join(self.home_folder, str(timestamp) + ".jpg")
-        backdrop_path = os.path.join(self.home_folder, str(timestamp) + "_backdrop.jpg")
+        poster_path = os.path.join(home_folder, str(timestamp) + ".jpg")
+        backdrop_path = os.path.join(home_folder, str(timestamp) + "_backdrop.jpg")
 
         if not os.path.exists(poster_path):
             self.poster = download_image(poster_url, poster_path)
@@ -90,8 +90,8 @@ class Movie:
             os.remove(self.backdrop)
 
         # delete database files
-        if self.database_file:
-            os.remove(self.database_file)
+        if self.client:
+            self.client.delete(self._id)
 
     def __str__(self):
         return self.title
@@ -102,3 +102,4 @@ class Movie:
 if __name__ == '__main__':
     client = Client("MovieLibrary")
     movie = Movie(r"E:\_PythonSuli\Desktop_App_1019\movies\Terminator.mkv", client)
+    movie.delete()
