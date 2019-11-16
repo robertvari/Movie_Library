@@ -2,6 +2,12 @@ QWidget{
     background-color: #081c24;
 }
 
+QLabel {
+ background-color: transparent;
+ color: white;
+ font-size: 16px;
+}
+
 QPushButton{
     border: 3px solid #01d277;
     background: transparent;
@@ -44,4 +50,54 @@ QMenu::item{
 
 QMenu::item:selected{
     color: #01d277;
+}
+
+/* Scrollbar style */
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical, QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal{
+    background: none;
+}
+
+QScrollBar:vertical{
+    border: 0px;
+    background: #111111;
+    width: 10px;
+}
+
+QScrollBar:horizontal{
+    border: 0px;
+    background: #111111;
+    height: 10px;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal{
+    background: #777;
+}
+
+QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover{
+    background: #888;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::add-line:horizontal{
+    height: 0px;
+    width: 0px;
+}
+
+QScrollBar::sub-line:vertical, QScrollBar::sub-line:horizontal{
+    height: 0px;
+    width: 0px;
+}
+
+#movie_title{
+    font-size: 35px;
+    font-weight: bold;
+}
+
+#subtitle{
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px 0px 5px 0px;
+}
+
+#small_text{
+    color: rgba(255,255,255, 150)
 }
