@@ -9,7 +9,7 @@ import os
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
 from objects.database import Client
-
+from .customWidgets import Button
 
 class MovieBrowser(QWidget):
     def __init__(self):
@@ -36,10 +36,10 @@ class SearchBar(QWidget):
         self.search_field.setPlaceholderText("Search...")
         main_layout.addWidget(self.search_field)
 
-        az_button = QPushButton('A-Z')
+        az_button = Button('A-Z')
         main_layout.addWidget(az_button)
 
-        time_button = QPushButton('T')
+        time_button = Button('Sort by time')
         main_layout.addWidget(time_button)
 
 
