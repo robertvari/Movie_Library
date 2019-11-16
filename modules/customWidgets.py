@@ -1,8 +1,9 @@
 from PySide2.QtWidgets import QWidget, QApplication
 from PySide2.QtGui import QPainter, QColor, QBrush, QPen, QPixmap, QFont, QFontMetrics
-from PySide2.QtCore import Qt, Signal, QRect
+from PySide2.QtCore import Qt, Signal, QRect, QSize
 
 import os
+
 
 class Button(QWidget):
     clicked = Signal()
@@ -70,22 +71,60 @@ class Button(QWidget):
 class IconButton(QWidget):
     clicked = Signal()
 
-    def __init__(self, image_path, width=40):
+    def __init__(self, image_path, size=40):
         super(IconButton, self).__init__()
-        self.setMinimumSize(width, width)
-        self.setMaximumSize(width, width)
+        self.setMinimumSize(size, size)
+        self.setMaximumSize(size, size)
+
+        self.hover = False
 
         pixmap_image = ""
-        if os.path.exist(image_path):
+        if os.path.exists(image_path):
             pixmap_image = image_path
 
         pixmap = QPixmap(pixmap_image)
+        self.pixmap = pixmap.scaled(QSize(size, size), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.painter = QPainter()
+
+    def enterEvent(self, event):
+        QApplication.setOverrideCursor(Qt.PointingHandCursor)
+        self.hover = True
+        self.repaint()
+        super(IconButton, self).enterEvent(event)
+
+    def leaveEvent(self, event):
+        QApplication.restoreOverrideCursor()
+        self.hover = False
+        self.repaint()
+        super(IconButton, self).leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit()
+        super(IconButton, self).mousePressEvent(event)
+
+    def paintEvent(self, event):
+        self.painter.begin(self)
+        self.draw()
+        self.painter.end()
+
+    def draw(self):
+        rect = self.rect()
+
+        self.painter.setOpacity(0.5)
+
+        if self.hover:
+            self.painter.setOpacity(1)
+
+        self.painter.drawPixmap(rect, self.pixmap)
 
 
 if __name__ == '__main__':
     import sys
 
+    from utilities.static_utils import get_static
+
     app = QApplication(sys.argv)
-    win = IconButton("Test Button")
+    win = IconButton(get_static("sort_AZ.png"))
     win.show()
     app.exec_()
