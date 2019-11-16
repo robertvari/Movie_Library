@@ -1,4 +1,5 @@
-import os, json, time
+import os, json
+from uuid import uuid4
 from utilities.movieDB import get_movie_data
 
 from utilities.file_utils import download_image
@@ -72,9 +73,9 @@ class Movie:
         poster_url = posterPathString
         backdrop_url = backdropPathString
 
-        timestamp = int(time.time())
-        poster_path = os.path.join(home_folder, str(timestamp) + ".jpg")
-        backdrop_path = os.path.join(home_folder, str(timestamp) + "_backdrop.jpg")
+        image_id = str(uuid4())
+        poster_path = os.path.join(home_folder, image_id + ".jpg")
+        backdrop_path = os.path.join(home_folder, image_id + "_backdrop.jpg")
 
         if not os.path.exists(poster_path):
             self.poster = download_image(poster_url, poster_path)
@@ -115,4 +116,4 @@ class Movie:
         return self.title
 
 if __name__ == '__main__':
-    print( Movie.get_all_movies_from_db() )
+    Movie(r'E:\_PythonSuli\Desktop_App_1019\movies\Terminator 2.mkv', client=Client())
