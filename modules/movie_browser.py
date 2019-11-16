@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
     QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
-from PySide2.QtCore import Qt, QSize, QRect, Signal
+from PySide2.QtCore import Qt, QSize, QRect, Signal, QThread
 
 from objects.movie import Movie
 import os
@@ -52,6 +52,8 @@ class MovieList(QListWidget):
     def __init__(self):
         super(MovieList, self).__init__()
 
+        self.movie_downloader = DownloaderWorker()
+
         self.setItemDelegate(MovieListDelegate())
         self.setSpacing(5)
 
@@ -62,6 +64,12 @@ class MovieList(QListWidget):
         self.itemDoubleClicked.connect(self.show_details_action)
 
         self.movie_db_list = Movie.get_all_movies_from_db()
+        self.refresh()
+
+        self.movie_downloader.download_finished.connect(self.update_movie_list)
+
+    def update_movie_list(self, movie_object):
+        self.movie_db_list.append(movie_object)
         self.refresh()
 
     def check_drop_data(self, urls):
@@ -111,10 +119,9 @@ class MovieList(QListWidget):
 
     def create_movies(self, files):
         self.movie_db_list = []
-        for item in files:
-            self.movie_db_list.append(Movie(movie_path=item, client=self.client))
 
-        self.refresh()
+        self.movie_downloader.set_file_list(files)
+        self.movie_downloader.start()
 
     def show_details_action(self, item):
         self.show_detail.emit(item.movie)
@@ -124,6 +131,27 @@ class MovieList(QListWidget):
 
         for movie_object in self.movie_db_list:
             MovieItem(self, movie_object)
+
+
+class DownloaderWorker(QThread):
+    download_finished = Signal(object)
+
+    def __init__(self):
+        super(DownloaderWorker, self).__init__()
+
+        self.file_list = []
+
+    def set_file_list(self, file_list):
+        self.file_list = file_list
+
+    def run(self):
+        # create Movie objects based on file_path
+
+        for file in self.file_list:
+            print("Downloading", file)
+
+            movie_object = Movie(movie_path=file, client=MovieList.client)
+            self.download_finished.emit(movie_object)
 
 
 class MovieListDelegate(QItemDelegate):
