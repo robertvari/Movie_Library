@@ -4,6 +4,7 @@ import sys
 
 from modules import movie_browser, movie_details
 from utilities.file_utils import get_files
+from utilities.static_utils import get_static
 from objects.movie import Movie
 
 
@@ -47,6 +48,8 @@ class MovieLibrary(QMainWindow):
         self.movie_browser.movie_list.show_detail.connect(self.show_details)
         self.movie_details.close_details.connect(self.hide_details)
 
+        self.set_style()
+
     def show_details(self, movie):
         self.movie_browser.setVisible(False)
 
@@ -68,6 +71,12 @@ class MovieLibrary(QMainWindow):
 
         if files[0]:
             self.movie_browser.movie_list.create_movies(files[0])
+
+    def set_style(self):
+        css = get_static("main.css")
+        with open(css) as style:
+            style_sheet = style.read()
+            self.setStyleSheet(style_sheet)
 
     def manage_movies_action(self):
         print("manage movies")

@@ -59,8 +59,6 @@ class MovieList(QListWidget):
         self.setResizeMode(QListWidget.Adjust)
         self.setSelectionMode(QListWidget.ExtendedSelection)
 
-        self.setStyleSheet("background-color:#222")
-
         self.itemDoubleClicked.connect(self.show_details_action)
 
         self.movie_db_list = Movie.get_all_movies_from_db()
