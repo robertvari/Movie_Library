@@ -2,6 +2,7 @@ from PySide2.QtWidgets import QWidget, QApplication
 from PySide2.QtGui import QPainter, QColor, QBrush, QPen, QPixmap, QFont, QFontMetrics
 from PySide2.QtCore import Qt, Signal, QRect
 
+import os
 
 class Button(QWidget):
     clicked = Signal()
@@ -65,10 +66,26 @@ class Button(QWidget):
             self.painter.setPen(Qt.NoPen)
             self.painter.drawRoundedRect(border_rect, self.roundness, self.roundness)
 
+
+class IconButton(QWidget):
+    clicked = Signal()
+
+    def __init__(self, image_path, width=40):
+        super(IconButton, self).__init__()
+        self.setMinimumSize(width, width)
+        self.setMaximumSize(width, width)
+
+        pixmap_image = ""
+        if os.path.exist(image_path):
+            pixmap_image = image_path
+
+        pixmap = QPixmap(pixmap_image)
+
+
 if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
-    win = Button("Test Button")
+    win = IconButton("Test Button")
     win.show()
     app.exec_()
