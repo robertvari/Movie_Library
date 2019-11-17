@@ -108,3 +108,12 @@ QProgressBar{
     color: #fff;
     font-size: 16px;
 }
+
+QHeaderView::section {
+    background-color: #081c24;
+    border: none;
+    font-size: 14px;
+    color: white;
+    border-left: 1px solid rgba(255,255,255,50);
+    padding: 5px;
+}

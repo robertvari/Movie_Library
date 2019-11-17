@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
-    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle, QProgressBar, QTreeWidget, QTreeWidgetItem
+    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle, QProgressBar, QTreeWidget, \
+    QTreeWidgetItem, QHeaderView
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 from PySide2.QtCore import Qt, QSize, QRect, Signal, QThread
 
@@ -39,6 +40,8 @@ class MovieBrowser(QWidget):
         self.movie_list.movie_downloader.download_progress_finished.connect(self.progress_bar.setVisible)
 
         self.search_bar.search_field.textChanged.connect(self.movie_list.do_search)
+        self.search_bar.search_field.textChanged.connect(self.movie_tree_list.do_search)
+
         self.search_bar.az_button.clicked.connect(self.movie_list.sort_by_title)
 
         self.search_bar.toggle_view_btn.clicked.connect(self.toggle_views_action)
@@ -194,19 +197,35 @@ class MovieTreeList(QTreeWidget):
 
     def __init__(self):
         super(MovieTreeList, self).__init__()
-        self.setHeaderLabels(["Title", "Release Date", "Rating"])
+        self.setHeaderLabels(["Title", "Release Date", "Rating", "Original Language"])
         self.setSortingEnabled(True)
+
+        header = self.header()
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.itemDoubleClicked.connect(self.show_details_action)
 
     def show_details_action(self, item):
         self.show_details.emit(item.movie_object)
 
+    def do_search(self, filter_string):
+        root = self.invisibleRootItem()
+
+        for index in range(root.childCount()):
+            movie_item = root.child(index)
+
+            if movie_item.has_name(filter_string):
+                movie_item.setHidden(False)
+            else:
+                movie_item.setHidden(True)
+
+
+
     def refresh(self, movie_list):
         self.clear()
 
         for movie in movie_list:
-            MovieTreeItem(movie, self)
+            movie_item = MovieTreeItem(movie, self)
 
 class DownloaderWorker(QThread):
     download_finished = Signal(object)
@@ -290,8 +309,24 @@ class MovieTreeItem(QTreeWidgetItem):
     def __init__(self, movie_object, parent):
         super(MovieTreeItem, self).__init__(parent)
 
-        self.movie_object = movie_object
+        self.movie = movie_object
 
         self.setText(0, movie_object.title)
         self.setText(1, movie_object.release_date)
         self.setText(2, str(movie_object.rating))
+        self.setText(3, str(movie_object.original_language))
+
+    def has_name(self, filter_string):
+        item_filter_string = self.movie.title.lower()
+        item_filter_string += f" {self.movie.release_date}"
+        item_filter_string += f" {self.movie.rating}"
+
+        if filter_string.lower() in item_filter_string:
+            return True
+
+        return False
+
+class ChildItem(QTreeWidgetItem):
+    def __init__(self, parent):
+        super(ChildItem, self).__init__(parent)
+        self.setText(0, "Child Item")
