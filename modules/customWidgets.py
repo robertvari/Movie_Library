@@ -140,7 +140,14 @@ class BackdropImageWidget(QWidget):
     def draw(self):
         rect = self.rect()
 
-        self.painter.drawPixmap(rect, self.pixmap)
+        scaled_image = self.pixmap.scaledToWidth(rect.width(), Qt.SmoothTransformation)
+
+        if scaled_image.height() < rect.height():
+            scaled_image = self.pixmap.scaledToHeight(rect.height(), Qt.SmoothTransformation)
+
+        image_rect = QRect(rect.x(), rect.y(), scaled_image.width(), scaled_image.height())
+        image_rect.moveCenter(rect.center())
+        self.painter.drawPixmap(image_rect, scaled_image)
 
         self.painter.setBrush(self.fill_brush)
         self.painter.setPen(Qt.NoPen)
