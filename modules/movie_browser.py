@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
-    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle, QProgressBar
+    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle, QProgressBar, QTreeWidget, QTreeWidgetItem
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 from PySide2.QtCore import Qt, QSize, QRect, Signal, QThread
 
@@ -29,13 +29,15 @@ class MovieBrowser(QWidget):
         self.movie_list = MovieList()
         main_layout.addWidget(self.movie_list)
 
+        self.movie_tree_list = MovieTreeList()
+        self.movie_tree_list.refresh(self.movie_list.movie_db_list)
+        main_layout.addWidget(self.movie_tree_list)
+
         self.movie_list.movie_downloader.download_started.connect(self.start_progress)
         self.movie_list.movie_downloader.download_progress.connect(self.download_progress)
         self.movie_list.movie_downloader.download_progress_finished.connect(self.progress_bar.setVisible)
 
-
         self.search_bar.search_field.textChanged.connect(self.movie_list.do_search)
-
         self.search_bar.az_button.clicked.connect(self.movie_list.sort_by_title)
 
     def start_progress(self, movie_list_length):
@@ -65,6 +67,9 @@ class SearchBar(QWidget):
 
         self.time_button = IconButton(get_static("sort_time.png"), size=30, checkbox=True)
         main_layout.addWidget(self.time_button)
+
+        self.togle_view_btn = IconButton(get_static("tree_view.png"), size=30, checkbox=True)
+        main_layout.addWidget(self.togle_view_btn)
 
     def sort_by_title(self):
         pass
@@ -177,6 +182,18 @@ class MovieList(QListWidget):
             MovieItem(self, movie_object)
 
 
+class MovieTreeList(QTreeWidget):
+    def __init__(self):
+        super(MovieTreeList, self).__init__()
+        self.setHeaderLabels(["Title", "Release Date", "Rating"])
+        self.setSortingEnabled(True)
+
+    def refresh(self, movie_list):
+        self.clear()
+
+        for movie in movie_list:
+            MovieTreeItem(movie, self)
+
 class DownloaderWorker(QThread):
     download_finished = Signal(object)
 
@@ -254,3 +271,13 @@ class MovieItem(QListWidgetItem):
             return True
 
         return False
+
+class MovieTreeItem(QTreeWidgetItem):
+    def __init__(self, movie_object, parent):
+        super(MovieTreeItem, self).__init__(parent)
+
+        self.movie_object = movie_object
+
+        self.setText(0, movie_object.title)
+        self.setText(1, movie_object.release_date)
+        self.setText(2, str(movie_object.rating))
