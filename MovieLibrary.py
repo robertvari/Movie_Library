@@ -55,6 +55,8 @@ class MovieLibrary(QMainWindow):
         main_layout.addWidget(self.movie_details)
 
         self.movie_browser.movie_list.show_detail.connect(self.show_details)
+        self.movie_browser.movie_tree_list.show_details.connect(self.show_details)
+
         self.movie_details.close_details.connect(self.hide_details)
 
         self.set_style()

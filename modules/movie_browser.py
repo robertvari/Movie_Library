@@ -190,10 +190,17 @@ class MovieList(QListWidget):
 
 
 class MovieTreeList(QTreeWidget):
+    show_details = Signal(object)
+
     def __init__(self):
         super(MovieTreeList, self).__init__()
         self.setHeaderLabels(["Title", "Release Date", "Rating"])
         self.setSortingEnabled(True)
+
+        self.itemDoubleClicked.connect(self.show_details_action)
+
+    def show_details_action(self, item):
+        self.show_details.emit(item.movie_object)
 
     def refresh(self, movie_list):
         self.clear()
