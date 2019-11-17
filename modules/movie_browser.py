@@ -36,6 +36,8 @@ class MovieBrowser(QWidget):
 
         self.search_bar.search_field.textChanged.connect(self.movie_list.do_search)
 
+        self.search_bar.az_button.clicked.connect(self.movie_list.sort_by_title)
+
     def start_progress(self, movie_list_length):
         self.progress_bar.setMaximum(movie_list_length)
         self.progress_bar.setValue(0)
@@ -44,7 +46,6 @@ class MovieBrowser(QWidget):
     def download_progress(self, download_data):
         self.progress_bar.setValue(download_data["progress_value"])
         self.progress_bar.setFormat(download_data["movie_file"])
-
 
 
 class SearchBar(QWidget):
@@ -59,11 +60,14 @@ class SearchBar(QWidget):
         self.search_field.setPlaceholderText("Search by Title, Release date or Rating...")
         main_layout.addWidget(self.search_field)
 
-        az_button = IconButton(get_static("sort_AZ.png"), size=30)
-        main_layout.addWidget(az_button)
+        self.az_button = IconButton(get_static("sort_AZ.png"), size=30, checkbox=True)
+        main_layout.addWidget(self.az_button)
 
-        time_button = IconButton(get_static("sort_time.png"), size=30)
-        main_layout.addWidget(time_button)
+        self.time_button = IconButton(get_static("sort_time.png"), size=30, checkbox=True)
+        main_layout.addWidget(self.time_button)
+
+    def sort_by_title(self):
+        pass
 
 
 # The movie list
@@ -99,6 +103,9 @@ class MovieList(QListWidget):
                 movie_item.setHidden(False)
             else:
                 movie_item.setHidden(True)
+
+    def sort_by_title(self, value):
+        print("sort_by_title", value)
 
     def update_movie_list(self, movie_object):
         self.movie_db_list.append(movie_object)

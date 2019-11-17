@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo import ASCENDING, DESCENDING
 from bson import ObjectId
 
 class Client():
@@ -16,7 +17,7 @@ class Client():
         self.collection.update_one({"_id":data.get("_id")}, {"$set":data})
 
     def find_all_movies(self):
-        return self.collection.find()
+        return self.collection.find().sort("title", ASCENDING)
 
     def find_by_title(self, title):
         return self.collection.find_one({"title":title})

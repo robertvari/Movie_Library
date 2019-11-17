@@ -69,14 +69,16 @@ class Button(QWidget):
 
 
 class IconButton(QWidget):
-    clicked = Signal()
+    clicked = Signal(bool)
 
-    def __init__(self, image_path, size=40):
+    def __init__(self, image_path, size=40, checkbox=False):
         super(IconButton, self).__init__()
         self.setMinimumSize(size, size)
         self.setMaximumSize(size, size)
 
         self.hover = False
+        self.checkbox = checkbox
+        self.checked = False
 
         pixmap_image = ""
         if os.path.exists(image_path):
@@ -85,6 +87,7 @@ class IconButton(QWidget):
         pixmap = QPixmap(pixmap_image)
         self.pixmap = pixmap.scaled(QSize(size, size), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
+        self.checked_brush = QBrush(QColor("red"))
         self.painter = QPainter()
 
     def enterEvent(self, event):
@@ -100,7 +103,11 @@ class IconButton(QWidget):
         super(IconButton, self).leaveEvent(event)
 
     def mousePressEvent(self, event):
-        self.clicked.emit()
+        if self.checkbox:
+            self.checked = not self.checked
+
+        self.clicked.emit(self.checked)
+
         super(IconButton, self).mousePressEvent(event)
 
     def paintEvent(self, event):
@@ -115,6 +122,12 @@ class IconButton(QWidget):
 
         if self.hover:
             self.painter.setOpacity(1)
+
+        if self.checkbox and self.checked:
+            self.painter.setOpacity(1)
+            self.painter.setBrush(self.checked_brush)
+            self.painter.setPen(Qt.NoPen)
+            self.painter.drawRect(rect)
 
         self.painter.drawPixmap(rect, self.pixmap)
 
