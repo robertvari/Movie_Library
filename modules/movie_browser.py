@@ -30,6 +30,7 @@ class MovieBrowser(QWidget):
         main_layout.addWidget(self.movie_list)
 
         self.movie_tree_list = MovieTreeList()
+        self.movie_tree_list.setVisible(False)
         self.movie_tree_list.refresh(self.movie_list.movie_db_list)
         main_layout.addWidget(self.movie_tree_list)
 
@@ -39,6 +40,12 @@ class MovieBrowser(QWidget):
 
         self.search_bar.search_field.textChanged.connect(self.movie_list.do_search)
         self.search_bar.az_button.clicked.connect(self.movie_list.sort_by_title)
+
+        self.search_bar.toggle_view_btn.clicked.connect(self.toggle_views_action)
+
+    def toggle_views_action(self, value):
+        self.movie_list.setVisible(not value)
+        self.movie_tree_list.setVisible(value)
 
     def start_progress(self, movie_list_length):
         self.progress_bar.setMaximum(movie_list_length)
@@ -68,8 +75,8 @@ class SearchBar(QWidget):
         self.time_button = IconButton(get_static("sort_time.png"), size=30, checkbox=True)
         main_layout.addWidget(self.time_button)
 
-        self.togle_view_btn = IconButton(get_static("tree_view.png"), size=30, checkbox=True)
-        main_layout.addWidget(self.togle_view_btn)
+        self.toggle_view_btn = IconButton(get_static("tree_view.png"), size=30, checkbox=True)
+        main_layout.addWidget(self.toggle_view_btn)
 
     def sort_by_title(self):
         pass
