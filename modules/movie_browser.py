@@ -34,7 +34,7 @@ class MovieBrowser(QWidget):
         self.movie_list.movie_downloader.download_progress_finished.connect(self.progress_bar.setVisible)
 
 
-        self.search_bar.search_signal.connect(self.movie_list.do_search)
+        self.search_bar.search_field.textChanged.connect(self.movie_list.do_search)
 
     def start_progress(self, movie_list_length):
         self.progress_bar.setMaximum(movie_list_length)
@@ -48,7 +48,6 @@ class MovieBrowser(QWidget):
 
 
 class SearchBar(QWidget):
-    search_signal = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -65,8 +64,6 @@ class SearchBar(QWidget):
 
         time_button = IconButton(get_static("sort_time.png"), size=30)
         main_layout.addWidget(time_button)
-
-        self.search_field.textChanged.connect(self.search_signal.emit)
 
 
 # The movie list
@@ -95,7 +92,13 @@ class MovieList(QListWidget):
         self.movie_downloader.download_finished.connect(self.update_movie_list)
 
     def do_search(self, filter_string):
-        print("MovieList.do_search", filter_string)
+        for index in range(self.count()):
+            movie_item = self.item(index)
+
+            if movie_item.has_name(filter_string):
+                movie_item.setHidden(False)
+            else:
+                movie_item.setHidden(True)
 
     def update_movie_list(self, movie_object):
         self.movie_db_list.append(movie_object)
@@ -229,3 +232,13 @@ class MovieItem(QListWidgetItem):
         self.movie = movie_object
 
         self.setData(Qt.UserRole, movie_object.poster)
+
+    def has_name(self, filter_string):
+        item_filter_string = self.movie.title.lower()
+        item_filter_string += f" {self.movie.release_date}"
+        item_filter_string += f" {self.movie.rating}"
+
+        if filter_string.lower() in item_filter_string:
+            return True
+
+        return False
