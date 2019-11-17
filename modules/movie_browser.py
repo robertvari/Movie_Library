@@ -1,10 +1,10 @@
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QHBoxLayout, QLineEdit, \
-    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle
+    QPushButton, QListWidget, QListWidgetItem, QItemDelegate, QStyle, QProgressBar
 from PySide2.QtGui import QPen, QBrush, QColor, QPixmap
 from PySide2.QtCore import Qt, QSize, QRect, Signal, QThread
 
 from objects.movie import Movie
-import os
+import os, time, random
 
 from utilities.static_utils import get_static
 from utilities.file_utils import get_files
@@ -22,8 +22,27 @@ class MovieBrowser(QWidget):
         self.search_bar = SearchBar()
         main_layout.addWidget(self.search_bar)
 
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setVisible(False)
+        main_layout.addWidget(self.progress_bar)
+
         self.movie_list = MovieList()
         main_layout.addWidget(self.movie_list)
+
+        self.movie_list.movie_downloader.download_started.connect(self.start_progress)
+        self.movie_list.movie_downloader.download_progress.connect(self.download_progress)
+        self.movie_list.movie_downloader.download_progress_finished.connect(self.progress_bar.setVisible)
+
+    def start_progress(self, movie_list_length):
+        self.progress_bar.setMaximum(movie_list_length)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setVisible(True)
+
+    def download_progress(self, download_data):
+        self.progress_bar.setValue(download_data["progress_value"])
+        self.progress_bar.setFormat(download_data["movie_file"])
+
+
 
 class SearchBar(QWidget):
     def __init__(self):
@@ -136,6 +155,10 @@ class MovieList(QListWidget):
 class DownloaderWorker(QThread):
     download_finished = Signal(object)
 
+    download_started = Signal(int)
+    download_progress = Signal(dict)
+    download_progress_finished = Signal(bool)
+
     def __init__(self):
         super(DownloaderWorker, self).__init__()
 
@@ -145,13 +168,15 @@ class DownloaderWorker(QThread):
         self.file_list = file_list
 
     def run(self):
-        # create Movie objects based on file_path
+        self.download_started.emit(len(self.file_list))
 
-        for file in self.file_list:
-            print("Downloading", file)
+        for index, file in enumerate(self.file_list):
+            self.download_progress.emit({"progress_value": index, "movie_file":f"Downloading data for: {os.path.basename(file)}..."})
 
             movie_object = Movie(movie_path=file, client=MovieList.client)
             self.download_finished.emit(movie_object)
+
+        self.download_progress_finished.emit(False)
 
 
 class MovieListDelegate(QItemDelegate):

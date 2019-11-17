@@ -101,3 +101,10 @@ QScrollBar::sub-line:vertical, QScrollBar::sub-line:horizontal{
 #small_text{
     color: rgba(255,255,255, 150)
 }
+
+QProgressBar{
+    border: 1px solid grey;
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+}
