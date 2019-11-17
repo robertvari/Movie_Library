@@ -68,8 +68,14 @@ class Movie:
         if not os.path.exists(home_folder):
             os.makedirs(home_folder)
 
-        posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
-        backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
+        posterPathString = None
+        if movie_data.get("poster_path"):
+            posterPathString = "https://image.tmdb.org/t/p/w300/" + movie_data["poster_path"]
+
+        backdropPathString = None
+        if movie_data.get("backdrop_path"):
+            backdropPathString = "https://image.tmdb.org/t/p/w500/" + movie_data["backdrop_path"]
+
         poster_url = posterPathString
         backdrop_url = backdropPathString
 
@@ -77,12 +83,11 @@ class Movie:
         poster_path = os.path.join(home_folder, image_id + ".jpg")
         backdrop_path = os.path.join(home_folder, image_id + "_backdrop.jpg")
 
-        if not os.path.exists(poster_path):
+        if posterPathString:
             self.poster = download_image(poster_url, poster_path)
+
+        if backdropPathString:
             self.backdrop = download_image(backdrop_url, backdrop_path)
-        else:
-            self.poster = poster_path
-            self.backdrop = backdrop_path
 
     def save(self):
         if self.client:

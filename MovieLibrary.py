@@ -3,6 +3,7 @@ from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QVBoxLayout, \
 import sys
 
 from modules import movie_browser, movie_details
+from utilities.movieDB import get_popular_movies
 from utilities.file_utils import get_files
 from utilities.static_utils import get_static
 from objects.movie import Movie
@@ -33,6 +34,14 @@ class MovieLibrary(QMainWindow):
         add_movie_action = QAction("Add Movie", settings_menu)
         add_movie_action.triggered.connect(self.add_movie_acion)
         settings_menu.addAction(add_movie_action)
+
+        settings_menu.addSeparator()
+
+        add_popular_movies = QAction("Add Popular Movies", settings_menu)
+        add_popular_movies.triggered.connect(self.add_popular_movies)
+        settings_menu.addAction(add_popular_movies)
+
+        settings_menu.addSeparator()
 
         manage_folder_action = QAction("Manage Movies", settings_menu)
         manage_folder_action.triggered.connect(self.manage_movies_action)
@@ -71,6 +80,13 @@ class MovieLibrary(QMainWindow):
 
         if files[0]:
             self.movie_browser.movie_list.create_movies(files[0])
+
+    def add_popular_movies(self):
+        popular_movie_list = get_popular_movies()
+
+        file_list = [f"movieDB/{i['original_title']}" for i in popular_movie_list]
+
+        self.movie_browser.movie_list.create_movies(file_list)
 
     def set_style(self):
         css = get_static("main.css")
