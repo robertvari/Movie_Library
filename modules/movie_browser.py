@@ -33,6 +33,9 @@ class MovieBrowser(QWidget):
         self.movie_list.movie_downloader.download_progress.connect(self.download_progress)
         self.movie_list.movie_downloader.download_progress_finished.connect(self.progress_bar.setVisible)
 
+
+        self.search_bar.search_signal.connect(self.movie_list.do_search)
+
     def start_progress(self, movie_list_length):
         self.progress_bar.setMaximum(movie_list_length)
         self.progress_bar.setValue(0)
@@ -45,6 +48,8 @@ class MovieBrowser(QWidget):
 
 
 class SearchBar(QWidget):
+    search_signal = Signal(str)
+
     def __init__(self):
         super().__init__()
 
@@ -60,6 +65,8 @@ class SearchBar(QWidget):
 
         time_button = IconButton(get_static("sort_time.png"), size=30)
         main_layout.addWidget(time_button)
+
+        self.search_field.textChanged.connect(self.search_signal.emit)
 
 
 # The movie list
@@ -86,6 +93,9 @@ class MovieList(QListWidget):
         self.refresh()
 
         self.movie_downloader.download_finished.connect(self.update_movie_list)
+
+    def do_search(self, filter_string):
+        print("MovieList.do_search", filter_string)
 
     def update_movie_list(self, movie_object):
         self.movie_db_list.append(movie_object)
