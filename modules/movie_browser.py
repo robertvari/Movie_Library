@@ -105,7 +105,12 @@ class MovieList(QListWidget):
                 movie_item.setHidden(True)
 
     def sort_by_title(self, value):
-        print("sort_by_title", value)
+        if value:
+            self.movie_db_list = sorted(self.movie_db_list, key= lambda m: m.title.lower(), reverse=True)
+        else:
+            self.movie_db_list = sorted(self.movie_db_list, key= lambda m: m.title.lower())
+
+        self.refresh()
 
     def update_movie_list(self, movie_object):
         self.movie_db_list.append(movie_object)
