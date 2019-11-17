@@ -56,7 +56,7 @@ class SearchBar(QWidget):
         main_layout.setContentsMargins(5,5,5,0)
 
         self.search_field = QLineEdit()
-        self.search_field.setPlaceholderText("Search...")
+        self.search_field.setPlaceholderText("Search by Title, Release date or Rating...")
         main_layout.addWidget(self.search_field)
 
         az_button = IconButton(get_static("sort_AZ.png"), size=30)

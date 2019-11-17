@@ -67,5 +67,11 @@ class MovieDetails(BackdropImageWidget):
 
         self.set_backdrop_image(movie.backdrop)
 
+        self.setFocus()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close_action()
+
     def close_action(self):
         self.close_details.emit()
