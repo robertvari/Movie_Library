@@ -107,7 +107,7 @@ class IconButton(QWidget):
             self.checked = not self.checked
 
         self.clicked.emit(self.checked)
-
+        self.repaint()
         super(IconButton, self).mousePressEvent(event)
 
     def paintEvent(self, event):
